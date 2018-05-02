@@ -28,6 +28,32 @@ app.get('/posts', (req, res) => {
     }).sort({_id:-1})  
 })
 
+app.get('/post/:id', (req, res) => {
+    let db = req.db
+    Post.findById(req.params.id, 'title description', function(error, post){
+        if(error) {console.error(error)}
+        res.send(post)
+    })
+})
+
+app.put('/posts/:id', (req,res) =>{
+    let db = req.db
+    Post.findById(req.params.id, 'title description', function(error, post){
+        if(error) {console.error(error)}
+
+        post.title = req.body.title
+        post.description = req.body.description
+        post.save(function(eror){
+            if(error) {
+                console.log(error)
+            }
+            res.send({
+                sucess:true
+            })
+        })
+    })
+})
+
 app.post('/posts', (req, res) => {
     var db = req.db;
     var title = req.body.title;
@@ -48,5 +74,19 @@ app.post('/posts', (req, res) => {
     })
   })
 
+  app.delete('/posts/:id', (req, res) => {
+      let db = req.db
+      Post.remove({
+          _id: req.params.id // passa o endereco para remocao
+       
+      }, function (err, post){
+          if(err)
+            res.send(err)
+          res.send({
+              sucess: true
+          })        
+      })
+  })
 
+  
 app.listen(process.env.PORT || 8081)
